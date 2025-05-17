@@ -54,9 +54,10 @@ export default function Home({ initialStats, weather, aqi }) {
   );
 }
 
-export async function getServerSideProps() {
-  const statsRes = await axios.get(`${process.env.HOST}/api/stats`);
-  const weatherRes = await axios.get(`${process.env.HOST}/api/weather`);
-  const aqiRes = await axios.get(`${process.env.HOST}/api/aqi`);
-  return { props: { initialStats: statsRes.data, weather: weatherRes.data, aqi: aqiRes.data } };
+export async function getServerSideProps({ req }) {
+    const base = `${req.headers['x-forwarded-proto'] || 'http'}://${req.headers.host}`;
+    const statsRes = await axios.get(`${base}/api/stats`);
+    const weatherRes = await axios.get(`${base}/api/weather`);
+    const aqiRes = await axios.get(`${base}/api/aqi`);
+    return { props: { stats: statsRes.data, weather: weatherRes.data, aqi: aqiRes.data } };
 }
